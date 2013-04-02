@@ -15,11 +15,33 @@
   	<url>https://github.com/elmer-garduno/metodos-mapreduce/issues</url>
   	<system>github.com</system>
   </issueManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
   	<dependency>
   		<groupId>org.apache.hadoop</groupId>
   		<artifactId>hadoop-core</artifactId>
   		<version>1.0.3</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.lucene</groupId>
+  		<artifactId>lucene-analyzers-common</artifactId>
+  		<version>4.1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.google.guava</groupId>
+  		<artifactId>guava</artifactId>
+  		<version>13.0.1</version>
   	</dependency>
   </dependencies>
 </project>
