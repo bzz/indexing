@@ -2,6 +2,7 @@ package mx.itam.metodos.invertedindex;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.io.ArrayWritable;
@@ -16,7 +17,7 @@ public class IndexReducer extends Reducer<Text, PositionalPosting, Text, ArrayWr
     for (PositionalPosting val : values) {
       postingList.add(new PositionalPosting(val));
     }
-    //Collections.sort(postingList);
+    Collections.sort(postingList);
     ArrayWritable result = new PositionalPostingArrayWritable(postingList.toArray(new PositionalPosting[0]));
     context.write(key, result);
   }

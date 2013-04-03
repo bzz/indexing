@@ -12,7 +12,7 @@ import org.apache.hadoop.io.Writable;
 
 import com.google.common.collect.Lists;
 
-public class PositionalPosting implements Writable {
+public class PositionalPosting implements Writable, Comparable<PositionalPosting> {
     private Text id;
     private IntArrayWritable pos;
     
@@ -43,12 +43,10 @@ public class PositionalPosting implements Writable {
     public String toString() {
       return id + ":" + pos;
     }
-    
-    public String getDocument() {
-      return id.toString();
+
+    @Override
+    public int compareTo(PositionalPosting other) {
+      return id.compareTo(other.id);
     }
     
-//    public int getPosition() {
-//      return pos.get();
-//    }
   }
