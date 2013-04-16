@@ -40,6 +40,15 @@ public class PositionalPosting implements Writable, Comparable<PositionalPosting
       pos.readFields(in);
     }
 
+    public Text getId() {
+      return id;
+    }
+    
+    public int getTf() {
+      return pos.get().length;
+    }
+    
+    @Override
     public String toString() {
       return id + ":" + pos;
     }
@@ -47,6 +56,23 @@ public class PositionalPosting implements Writable, Comparable<PositionalPosting
     @Override
     public int compareTo(PositionalPosting other) {
       return id.compareTo(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+      return id.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof PositionalPosting)) {
+        return false;
+      }
+      PositionalPosting pp = (PositionalPosting) o;
+      return id.equals(pp.id);
     }
     
   }
