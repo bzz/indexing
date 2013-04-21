@@ -28,6 +28,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.LineReader;
+import com.google.common.primitives.Floats;
 
 public class VectorSpaceTool {
 
@@ -35,16 +36,16 @@ public class VectorSpaceTool {
 
     private String id;
 
-    private int score;
+    private float score;
 
-    public Score(String id, int score) {
+    public Score(String id, float score) {
       this.id = id;
       this.score = score;
     }
 
     @Override
     public int compareTo(Score o) {
-      return score - o.score;
+      return Floats.compare(score,o.score);
     }
     
     public String toString() {
@@ -71,31 +72,25 @@ public class VectorSpaceTool {
     String line = null;
     System.out.print(">");
     while ((line = lr.readLine()) != null) {
-      Op operator = Op.AND;
-      if (line.startsWith("OR")) {
-        operator = Op.OR;
-      }
       List<String> tokens = analyze(line);
-      Multimap<String, Integer> candidates = HashMultimap.create();
+      Multimap<String, Float> candidates = HashMultimap.create();
       for (String token : tokens) {
         Writable[] postings = dictionary.get(token);
-        int idf = (N / postings.length);
+        float idf = (float) Math.log(N / (float) postings.length);
         if (postings != null) {
-          Set<PositionalPosting> set = Sets.newHashSet();
           for (Writable w : postings) {
             PositionalPosting pp = (PositionalPosting) w;
             int tf = pp.getTf();
-            int tfidf = idf * tf;
+            float tfidf = idf * tf;
             candidates.put(pp.getId().toString(), tfidf);
-            set.add(pp);
           }
         }
       }
       if (candidates.size() > 0) {
         List<Score> result = Lists.newArrayList();
-        for (Entry<String, Collection<Integer>> entry : candidates.asMap().entrySet()) {
-          int sum = 0;
-          for (Integer w : entry.getValue()) {
+        for (Entry<String, Collection<Float>> entry : candidates.asMap().entrySet()) {
+          float sum = 0;
+          for (Float w : entry.getValue()) {
             sum += w.intValue();
           }
           result.add(new Score(entry.getKey(), sum));
@@ -133,10 +128,6 @@ public class VectorSpaceTool {
     }
     this.N = count.size();
   }
-
-  // private static PositionalPosting[] readPostings() {
-  //
-  // }
 
   private static List<String> analyze(String text) throws IOException, InterruptedException {
     Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41);

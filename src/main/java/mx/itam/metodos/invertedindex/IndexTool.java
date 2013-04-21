@@ -33,16 +33,6 @@ import com.google.common.io.LineReader;
 
 public class IndexTool {
 
-  public static BitSet load(String path) throws Exception {
-    InputStream in = new FileInputStream(path);
-    try {
-      ObjectInputStream is = new ObjectInputStream(in);
-      return (BitSet) is.readObject();
-    } finally {
-      in.close();
-    }
-  }
-
   private enum Op {AND, OR}
   
   public static void main(String[] args) throws Exception {
@@ -74,7 +64,6 @@ public class IndexTool {
             return arg0.size() - arg1.size();
           }
         });
-        //System.out.println(operator + ">" + candidates);
         Set<PositionalPosting> result = candidates.removeFirst();
         for (Set<PositionalPosting> pp : candidates) {
           if (operator == Op.AND) {
