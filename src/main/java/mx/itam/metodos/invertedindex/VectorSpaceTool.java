@@ -58,10 +58,6 @@ public class VectorSpaceTool {
 
   private int N;
 
-  private enum Op {
-    AND, OR
-  }
-
   public static void main(String[] args) throws Exception {
     new VectorSpaceTool(args[0]);
   }
@@ -115,10 +111,12 @@ public class VectorSpaceTool {
     Configuration conf = new Configuration();
     FileSystem fs = out.getFileSystem(conf);
     SequenceFile.Reader reader = new SequenceFile.Reader(fs, out, conf);
+
     Text text = new Text();
     PositionalPostingArrayWritable posting = new PositionalPostingArrayWritable();
     this.dictionary = Maps.newHashMap();
     Set<String> count = Sets.newHashSet();
+
     while (reader.next(text, posting)) {
       dictionary.put(text.toString(), posting.get());
       for (Writable w : posting.get()) {
@@ -126,6 +124,7 @@ public class VectorSpaceTool {
         count.add(pp.getId().toString());
       }
     }
+    reader.close();
     this.N = count.size();
   }
 
@@ -144,6 +143,7 @@ public class VectorSpaceTool {
     } finally {
       ts.close();
     }
+    analyzer.close();
     return list;
   }
 

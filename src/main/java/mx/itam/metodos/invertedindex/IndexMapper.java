@@ -31,27 +31,28 @@ public class IndexMapper extends Mapper<LongWritable, Text, Text, PositionalPost
     }
   }
 
-  private void analyze(String id, String text, Context context) throws IOException,
+  private void analyze(String docId, String doc, Context context) throws IOException,
           InterruptedException {
-    Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41);
-    TokenStream ts = analyzer.tokenStream("text", new StringReader(text));
+    Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41); //TODO(alex): move to a field
+    TokenStream ts = analyzer.tokenStream("text", new StringReader(doc));
     CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
     OffsetAttribute offsetAtt = ts.addAttribute(OffsetAttribute.class);
     Multimap<String, IntWritable> map = LinkedHashMultimap.create();
-    Text key = new Text(id);
+    Text key = new Text(docId); //TODO(alex): reuse writebles
     try {
       ts.reset();
       while (ts.incrementToken()) {
         String token = termAtt.toString();
-        map.put(token, new IntWritable(offsetAtt.startOffset()));
+        map.put(token, new IntWritable(offsetAtt.startOffset())); //TODO(alex): reuse writebles
       }
       ts.end();
     } finally {
       ts.close();
     }
     for (Map.Entry<String, Collection<IntWritable>> me : map.asMap().entrySet()) {
-      Text token = new Text(me.getKey());
+      Text token = new Text(me.getKey()); //TODO(alex): reuse writebles
       context.write(token, new PositionalPosting(key, Lists.newArrayList(me.getValue())));
     }
+    analyzer.close();
   }
 }
