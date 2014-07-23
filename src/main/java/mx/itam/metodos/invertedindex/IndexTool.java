@@ -1,12 +1,8 @@
 package mx.itam.metodos.invertedindex;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.StringReader;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -37,6 +33,7 @@ public class IndexTool {
   
   public static void main(String[] args) throws Exception {
     Map<String, Writable[]> dictionary = loadIndex(args[0]);
+
     LineReader lr = new LineReader(new InputStreamReader(System.in));
     String line = null;
     System.out.print(">");
@@ -57,10 +54,10 @@ public class IndexTool {
           candidates.add(set);
         }
       }
+
       if (candidates.size() > 0) {
         Collections.sort(candidates, new Comparator<Set<PositionalPosting>>() {
-          @Override
-          public int compare(Set arg0, Set arg1) {
+          @Override public int compare(Set<PositionalPosting> arg0, Set<PositionalPosting> arg1) {
             return arg0.size() - arg1.size();
           }
         });
@@ -87,15 +84,20 @@ public class IndexTool {
   }
 
   private static Map<String, Writable[]> loadIndex(String path) throws IOException {
-    Path out = new Path(path);
-    Configuration conf = new Configuration();
-    FileSystem fs = out.getFileSystem(conf);
-    SequenceFile.Reader reader = new SequenceFile.Reader(fs, out, conf);
-    Text text = new Text();
-    PositionalPostingArrayWritable posting = new PositionalPostingArrayWritable();
     Map<String, Writable[]> dictionary = Maps.newHashMap();
-    while (reader.next(text, posting)) {
-      dictionary.put(text.toString(), posting.get());
+    SequenceFile.Reader reader = null;
+    try {
+      Path out = new Path(path);
+      Configuration conf = new Configuration();
+      FileSystem fs = out.getFileSystem(conf);
+      reader = new SequenceFile.Reader(fs, out, conf);
+      Text text = new Text();
+      PositionalPostingArrayWritable posting = new PositionalPostingArrayWritable();
+      while (reader.next(text, posting)) {
+        dictionary.put(text.toString(), posting.get());
+      }
+    } finally {
+      if (reader != null) { reader.close(); };
     }
     return dictionary;
   }
@@ -105,21 +107,23 @@ public class IndexTool {
   // }
 
   private static List<String> analyze(String text) throws IOException, InterruptedException {
+    List<String> result = Lists.newArrayList();
     Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41);
-    TokenStream ts = analyzer.tokenStream("text", new StringReader(text));
-    CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
-    List<String> list = Lists.newArrayList();
+    TokenStream ts = null;
     try {
+      ts = analyzer.tokenStream("text", new StringReader(text));
+      CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
       ts.reset();
       while (ts.incrementToken()) {
         String token = termAtt.toString();
-        list.add(token);
+        result.add(token);
       }
       ts.end();
     } finally {
-      ts.close();
+      analyzer.close();
+      if (ts != null) { ts.close(); }
     }
-    return list;
+    return result;
   }
 
 }
