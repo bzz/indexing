@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.LineReader;
 
-public class IndexTool {
+public class IndexCLI {
 
   private enum Op {AND, OR}
   

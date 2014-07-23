@@ -12,7 +12,7 @@ import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class InvertedIndex extends Configured implements Tool {
+public class InvertedIndexTool extends Configured implements Tool {
   
   @Override
   public int run(String[] args) throws Exception {
@@ -24,24 +24,29 @@ public class InvertedIndex extends Configured implements Tool {
   }
   
 	public boolean buildIndex(Path data, Path out, Configuration conf) throws Exception {
-		Job job = new Job(conf, "invertedindex");
+		Job job = new Job(conf, "inverted-index-tool");
     System.err.println(IndexMapper.class);
-		job.setJarByClass(InvertedIndex.class);
+		job.setJarByClass(InvertedIndexTool.class);
+
 		job.setMapperClass(IndexMapper.class);
 		job.setReducerClass(IndexReducer.class);
-    job.setMapOutputKeyClass(Text.class);
+
+		job.setMapOutputKeyClass(Text.class);
     job.setMapOutputValueClass(PositionalPosting.class);
+
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(PositionalPostingArrayWritable.class);
-		job.setInputFormatClass(TextInputFormat.class);
+
+    job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(SequenceFileOutputFormat.class);
+
 		FileInputFormat.setInputPaths(job, data);
 		FileOutputFormat.setOutputPath(job, out);
 		return job.waitForCompletion(true);
 	}
 
   public static void main(String[] args) throws Exception {
-    int res = ToolRunner.run(new Configuration(), new InvertedIndex(), args);
+    int res = ToolRunner.run(new Configuration(), new InvertedIndexTool(), args);
     System.exit(res);
   }
 }

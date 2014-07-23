@@ -30,7 +30,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.LineReader;
 import com.google.common.primitives.Floats;
 
-public class VectorSpaceTool {
+public class VectorSpaceCLI {
 
   public class Score implements Comparable<Score> {
 
@@ -59,10 +59,10 @@ public class VectorSpaceTool {
   private int N;
 
   public static void main(String[] args) throws Exception {
-    new VectorSpaceTool(args[0]);
+    new VectorSpaceCLI(args[0]);
   }
 
-  public VectorSpaceTool(String path) throws Exception {
+  public VectorSpaceCLI(String path) throws Exception {
     loadIndex(path);
     LineReader lr = new LineReader(new InputStreamReader(System.in));
     String line = null;
