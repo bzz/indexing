@@ -1,4 +1,7 @@
-package mx.itam.metodos.invertedindex;
+package invertedindex.mr;
+
+import invertedindex.mr.writable.PositionalPosting;
+import invertedindex.mr.writable.PositionalPostingArrayWritable;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;

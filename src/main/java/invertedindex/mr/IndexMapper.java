@@ -1,4 +1,6 @@
-package mx.itam.metodos.invertedindex;
+package invertedindex.mr;
+
+import invertedindex.mr.writable.PositionalPosting;
 
 import java.io.IOException;
 import java.io.StringReader;

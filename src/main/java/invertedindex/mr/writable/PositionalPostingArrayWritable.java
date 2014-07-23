@@ -1,4 +1,4 @@
-package mx.itam.metodos.invertedindex;
+package invertedindex.mr.writable;
 
 import java.util.Arrays;
 
